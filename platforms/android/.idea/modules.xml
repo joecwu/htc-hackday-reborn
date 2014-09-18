@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/Reborn.iml" filepath="$PROJECT_DIR$/Reborn.iml" />
+      <module fileurl="file://$PROJECT_DIR$/CordovaLib/Reborn-CordovaLib.iml" filepath="$PROJECT_DIR$/CordovaLib/Reborn-CordovaLib.iml" />
+    </modules>
+  </component>
+</project>
+
