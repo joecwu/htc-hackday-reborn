@@ -22,14 +22,52 @@
         <meta charset="utf-8" />
         <meta name="format-detection" content="telephone=no" />
         <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
-        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <!-- <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" /> -->
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=medium-dpi" />
         <link rel="stylesheet" type="text/css" href="css/index.css" />
         <meta name="msapplication-tap-highlight" content="no" />
         <title>Hello World</title>
+        <link rel="stylesheet" href="http://code.jquery.com/mobile/1.1.1/jquery.mobile-1.1.1.min.css" />
+        <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+        <script type="text/javascript" src="http://code.jquery.com/mobile/1.1.1/jquery.mobile-1.1.1.min.js"></script>
+        <script type="text/javascript" src="js/jquery.magi.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="css/magi.min.css" />
+        <script>
+            $('#pHome').live("swipeleft", function(){
+                $.mobile.changePage("#pCalendar");
+            });
+            $('#pHome').live("swiperight", function(){
+                $.mobile.changePage("#pBlinkfeed");
+            });
+            $('#pCalendar').live("swiperight", function(){
+                $.mobile.changePage("#pHome");
+            });
+            $('#pBlinkfeed').live("swipeleft", function(){
+                $.mobile.changePage("#pHome");
+            });
+        </script>
     </head>
     <body>
-        <div class="app">
-            <h1>Apache Cordova</h1>
+        <div data-role="page" id="pHome">
+            <div data-role="content">
+                <h1>HOME</h1>
+                <p>
+                    <ul data-role="listview" data-inset="true" data-theme="c">
+                        <li id="listitem">Swipe Right to view Page 1</li>
+                    </ul>
+                </p>
+            </div>
+        </div>
+        <div data-role="page" id="pBlinkfeed">
+            <h1>BlinkFeed</h1>
+        </div>
+        <div data-role="page" id="pCalendar">
+            <div data-role="content">
+                <div class="calender">
+            </div>
+        </div>
+        <div data-role="page" id="pNotification">
+            <h1>Notification</h1>
             <div id="deviceready" class="blink">
                 <p class="event listening">Connecting to Device</p>
                 <p class="event received">Device is Ready</p>
@@ -40,5 +78,14 @@
         <script type="text/javascript">
             app.initialize();
         </script>
+
+
+            <script type="text/javascript">
+                var priority = 'd';
+                var customDays = new Array('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday');
+                var customMonths = new Array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
+                var customMonthsShort = new Array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
+                $(".calender").magiCalender(priority, customDays, customMonths, customMonthsShort);
+            </script>
     </body>
 </html>
