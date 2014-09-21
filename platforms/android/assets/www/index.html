@@ -27,23 +27,25 @@
         <link rel="stylesheet" type="text/css" href="css/index.css" />
         <meta name="msapplication-tap-highlight" content="no" />
         <title>Hello World</title>
-        <link rel="stylesheet" href="http://code.jquery.com/mobile/1.1.1/jquery.mobile-1.1.1.min.css" />
-        <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
-        <script type="text/javascript" src="http://code.jquery.com/mobile/1.1.1/jquery.mobile-1.1.1.min.js"></script>
+        <link rel="stylesheet" href="css/jquery.mobile-1.1.1.min.css" />
+        <script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
+        <script type="text/javascript" src="js/jquery.mobile-1.1.1.min.js"></script>
         <script type="text/javascript" src="js/jquery.magi.min.js"></script>
+        <script type="text/javascript" src="js/blinkfeed.js"></script>
         <link rel="stylesheet" type="text/css" href="css/magi.min.css" />
+        <script type="text/javascript" src="js/Insomnia.js"></script>
         <script>
             $('#pHome').live("swipeleft", function(){
-                $.mobile.changePage("#pCalendar");
+                $.mobile.changePage("#pCalendar", {transition: "slide", reverse: false});
             });
             $('#pHome').live("swiperight", function(){
-                $.mobile.changePage("#pBlinkfeed");
+                $.mobile.changePage("#pBlinkfeed", {transition: "slide", reverse: true});
             });
             $('#pCalendar').live("swiperight", function(){
-                $.mobile.changePage("#pHome");
+                $.mobile.changePage("#pHome", {transition: "slide", reverse: true});
             });
             $('#pBlinkfeed').live("swipeleft", function(){
-                $.mobile.changePage("#pHome");
+                $.mobile.changePage("#pHome", {transition: "slide", reverse: false});
             });
         </script>
     </head>
@@ -59,7 +61,14 @@
             </div>
         </div>
         <div data-role="page" id="pBlinkfeed">
-            <h1>BlinkFeed</h1>
+            <script type="text/javascript">
+                blinkfeed.getHighlight();
+            </script>
+            <div class="bf_bf">BlinkFeed</div>
+            <div id="bf_main" class="bf_main">
+                <div class="bf_title"></div>
+                <div class="bf_image"></div>
+            </div>
         </div>
         <div data-role="page" id="pCalendar">
             <div data-role="content">

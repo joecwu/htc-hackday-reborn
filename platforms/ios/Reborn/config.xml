@@ -19,13 +19,20 @@
     <feature name="LocalStorage">
         <param name="ios-package" value="CDVLocalStorage" />
     </feature>
+    <feature name="Insomnia">
+        <param name="ios-package" value="Insomnia" />
+    </feature>
     <name>Reborn</name>
     <description>
-        A sample Apache Cordova application that responds to the deviceready event.
+        2014 HTC Creative Labs Hack Day - Reborn.
     </description>
-    <author email="dev@cordova.apache.org" href="http://cordova.io">
-        Apache Cordova Team
+    <author email="joec_wu@htc.com" href="http://cordova.io">
+        HTC Creative Labs - Reborn team
     </author>
     <content src="index.html" />
+    <preference name="Fullscreen" value="true" />
+    <preference name="Orientation" value="landscape" />
+    <preference name="BackgroundColor" value="0x000000" />
+    <preference name="HideKeyboardFormAccessoryBar" value="true" />
     <access origin="*" />
 </widget>
