@@ -19,10 +19,11 @@
 
 package com.htc.cs.hackday.reborn;
 
+import org.apache.cordova.Config;
+import org.apache.cordova.CordovaActivity;
+
 import android.os.Bundle;
-import android.webkit.WebView;
-import org.apache.cordova.*;
-import android.view.View; 
+import android.view.View;
 
 public class Reborn extends CordovaActivity 
 {
