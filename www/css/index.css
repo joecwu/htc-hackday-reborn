@@ -24,7 +24,7 @@ body {
     -webkit-touch-callout: none;                /* prevent callout to copy image, etc when tap to hold */
     -webkit-text-size-adjust: none;             /* prevent webkit from resizing text to fit */
     -webkit-user-select: none;                  /* prevent copy paste, to allow, change 'none' to 'text' */
-    background-color:#E4E4E4;
+/*    background-color:#E4E4E4;
     background-image:linear-gradient(top, #A7A7A7 0%, #E4E4E4 51%);
     background-image:-webkit-linear-gradient(top, #A7A7A7 0%, #E4E4E4 51%);
     background-image:-ms-linear-gradient(top, #A7A7A7 0%, #E4E4E4 51%);
@@ -35,14 +35,29 @@ body {
         color-stop(0, #A7A7A7),
         color-stop(0.51, #E4E4E4)
     );
-    background-attachment:fixed;
+    background-attachment:fixed;*/
     font-family:'HelveticaNeue-Light', 'HelveticaNeue', Helvetica, Arial, sans-serif;
     font-size:12px;
     height:100%;
     margin:0px;
     padding:0px;
-    text-transform:uppercase;
+    /*text-transform:uppercase;*/
     width:100%;
+}
+
+#pHome {
+    background-image: none;
+    background-color: #000000;
+}
+
+#pBlinkfeed {
+    background-image: none;
+    background-color: #000000;
+}
+
+#pCalendar {
+    background-image: none;
+    background-color: #000000;
 }
 
 /* Portrait layout (default) */
@@ -114,34 +129,39 @@ h1 {
     -webkit-animation:fade 3000ms infinite;
 }
 
+.bf_main {
+    position: fixed;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+    padding: 15px;
+}
+
 .bf_bf {
     position: fixed;
     font-size: 36px;
     font-weight: bold;
     left: 0px;
     right: 0px;
-    padding: 5px 15px;
-    top: 10px;
+    padding: 5px 35px;
+    top: 20px;
     z-index: 20;
     color: white;
     background-color: green;
     opacity:0.8;
     filter:alpha(opacity=80); /* For IE8 and earlier */
-}
-
-.bf_main {
-    width: 100%;
-    min-height: 100%; 
+    text-transform:uppercase;
 }
 
 .bf_title {
     position: fixed;
     left: 0px;
     right: 0px;
-    bottom: 10px;
-    margin: 10px;
-    padding: 0 10px 0 10px;
-    font-size: 36px;
+    bottom: 20px;
+    margin: 15px;
+    padding: 0 20px 0 20px;
+    font-size: 24px;
     font-weight: bold;
     color: black;
     z-index: 20;    
@@ -151,7 +171,6 @@ h1 {
 }
 
 .bf_image {
-    position: fixed;
     width: 100%;
     height: 100%;
     min-height: 100%; 
@@ -160,3 +179,133 @@ h1 {
     background-size: 100%;
     z-index: 10;
 }
+
+.bf_icon {
+    position: fixed;
+    left: 15px;
+    width: 20px;
+    height: 20px;
+    bottom: 15px;
+    margin: 0 0 0 20px;
+    font-size: 36px;
+    z-index: 30;
+    background-size: 100%;
+}
+
+.bf_source {
+    position: fixed;
+    left: 15px;
+    right: 0px;
+    bottom: 15px;
+    padding: 2px 10px 2px 10px;
+    margin: 0 0 0 35px;
+    font-size: 14px;
+    font-weight: normal;
+    color: white;
+    z-index: 20;    
+    background-color: black;
+    opacity:0.5;
+    filter:alpha(opacity=50); /* For IE8 and earlier */
+}
+
+
+.main_title {
+    position: absolute;
+    right: 15px;
+    bottom: 15px;
+}
+
+.main_title p.title_htc {
+    color: #22FF44;
+    font-size:22px;
+    font-weight:bold;
+    text-shadow: none;
+    margin: 0 5px;
+    padding: 0;
+    display: inline;
+}
+
+.main_title p.title_reborn {
+    font-family: 'Ubuntu', Arial, sans-serif;
+    color: #AA0033;
+    font-size:16px;
+    text-shadow: none;
+    margin: 0;
+    padding: 0;
+    display: inline;
+}
+
+div.clockWrap {
+    position: fixed;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+    padding: 15px;
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+    display:table;
+}
+
+div.clockMain {
+    display:table-cell;
+    font-family: 'Ubuntu', Arial, sans-serif;
+    text-shadow: none;
+    font-size: 20px;
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+    vertical-align: middle;
+    text-align: center;
+}
+
+div.clockMain a {
+    color: #333;
+    font-size: 18px;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+    div.clockMain a:hover {
+        text-decoration: underline;
+    }
+
+div.clockMain div.date {
+    color: #666;
+    font-size: 1.5em;
+    margin: 8px 0;
+}
+
+div.clockMain div.time {
+    font-size: 3em;
+    font-weight: 200;
+}
+
+div.clockMain div.time span {
+
+    border-radius: 5px;
+    padding: 1px 4px 3px 4px;
+    color: #fff;
+
+    /* fallback */
+    background: #000;
+    /* Safari 4-5, Chrome 1-9 */
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#555), to(#000));
+    /* Safari 5.1, Chrome 10+ */
+    background: -webkit-linear-gradient(top, #555, #000);
+    /* Firefox 3.6+ */
+    background: -moz-linear-gradient(top, #555, #000);
+    /* IE 10 */
+    background: -ms-linear-gradient(top, #555, #000);
+    /* Opera 11.10+ */
+    background: -o-linear-gradient(top, #555, #000);
+}
+
+div.clockMain div.time strong {
+    font-weight: 100;
+    font-size: 1em;
+    margin-left: 5px;
+    color: #666;
+}
+

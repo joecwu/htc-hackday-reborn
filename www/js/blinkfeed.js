@@ -7,7 +7,11 @@ var blinkfeed = {
 		var imgId = item.meta.th.id;
 		var imgRs = item.meta.th.rs[0];
 		var imgURL = 'http://img-prism.htctouch.com/thumbnail?id='+imgId+'&w='+imgRs;
-		$('div.bf_image').css("background-image", "url("+imgURL+")");// .prepend('<img class="bf_img" src="" />');
+		var iconURL = 'http://img-prism.htctouch.com/provider/icon?id='+item.meta.pid;
+		$('div.bf_image').css("background-image", "url("+imgURL+")");
+		// $('div.bf_image').prepend('<img class="bf_img" src="'+imgURL+'" />');
+		$('div.bf_icon').css("background-image", "url("+iconURL+")");
+		$('div.bf_source').text(item.meta.src);
 		if(items.length > index+1){
 			setTimeout( function() { blinkfeed.fillItem(items,index+1); } , 5000);
 		}else{
