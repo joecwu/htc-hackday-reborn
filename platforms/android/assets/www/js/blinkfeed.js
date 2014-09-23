@@ -1,13 +1,13 @@
 
 var blinkfeed = {
-	HIGHLIGHT_URL: "https://geo-prism.htctouch.com/s6/fi/hl/r/50?cids=1319108,1320486,1398121",
+	HIGHLIGHT_URL: "https://geo-prism.htcsense.com/s6/fi/hl/r/50?cids=1319108,1320486,1398121",
 	fillItem: function(items,index) {
 		var item = items[index];
 		$('div.bf_title').text(item.meta.tl);
 		var imgId = item.meta.th.id;
 		var imgRs = item.meta.th.rs[0];
-		var imgURL = 'http://img-prism.htctouch.com/thumbnail?id='+imgId+'&w='+imgRs;
-		var iconURL = 'http://img-prism.htctouch.com/provider/icon?id='+item.meta.pid;
+		var imgURL = 'http://img-prism.htcsense.com/thumbnail?id='+imgId+'&w='+imgRs;
+		var iconURL = 'http://img-prism.htcsense.com/provider/icon?id='+item.meta.pid;
 		$('div.bf_image').css("background-image", "url("+imgURL+")");
 		// $('div.bf_image').prepend('<img class="bf_img" src="'+imgURL+'" />');
 		$('div.bf_icon').css("background-image", "url("+iconURL+")");
