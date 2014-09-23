@@ -6,8 +6,8 @@ var blinkfeed = {
 		$('div.bf_title').text(item.meta.tl);
 		var imgId = item.meta.th.id;
 		var imgRs = item.meta.th.rs[0];
-		var imgURL = 'http://img-prism.htcsense.com/thumbnail?id='+imgId+'&w='+imgRs;
-		var iconURL = 'http://img-prism.htcsense.com/provider/icon?id='+item.meta.pid;
+		var imgURL = 'https://img-prism.htcsense.com/thumbnail?id='+imgId+'&w='+imgRs;
+		var iconURL = 'https://img-prism.htcsense.com/provider/icon?id='+item.meta.pid;
 		$('div.bf_image').css("background-image", "url("+imgURL+")");
 		// $('div.bf_image').prepend('<img class="bf_img" src="'+imgURL+'" />');
 		$('div.bf_icon').css("background-image", "url("+iconURL+")");
