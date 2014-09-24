@@ -23,7 +23,12 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Random;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
+import java.util.concurrent.Callable;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.cordova.Config;
 import org.apache.cordova.CordovaActivity;
@@ -37,11 +42,12 @@ import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -73,11 +79,13 @@ public class Reborn extends CordovaActivity {
     private AsyncNetworkSocket mCommandClient;
     private WakeLock mPartialWakeLock;
     private BluetoothAdapter mBluetoothAdapter;
+    private Timer mBluetoothScanTimer;
 
     @SuppressLint("InlinedApi")
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
+        Log.d(LOG_TAG, String.format("onCreate {%h}", hashCode()));
         super.onCreate(savedInstanceState);
         super.init();
         // getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
@@ -107,40 +115,75 @@ public class Reborn extends CordovaActivity {
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mBluetoothAdapter != null) {
             if (mBluetoothAdapter.isEnabled()) {
-                tryConnectBluetooth();
+                scheduleBluetoothScan();
             } else {
                 Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(enableBtIntent, REQUEST_CODE_ENABLE_BLUETOOTH);
             }
         }
 
-        // Start bluetooth receiver.
-        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_ACL_CONNECTED);
-        filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
-        registerReceiver(new BluetoothConnectionReceiver(), filter);
+        // Unlock the device and make the screen as bright as possible.
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
+                | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
+                | WindowManager.LayoutParams.FLAG_FULLSCREEN
+                | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+                | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        WindowManager.LayoutParams params = getWindow().getAttributes();
+        params.screenBrightness = WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_FULL;
+        getWindow().setAttributes(params);
     }
 
     /**
      * Try to connect to bluetooth devices.
      */
-    private void tryConnectBluetooth() {
-        Log.d(LOG_TAG, "tryConnectBluetooth");
-        Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+    private void scheduleBluetoothScan() {
+        mBluetoothScanTimer = new Timer(true);
+        mBluetoothScanTimer.scheduleAtFixedRate(new TimerTask() {
 
-        // Turn on / off screen accordingly.
-        if (pairedDevices.size() > 0) {
+            @Override
+            public void run() {
+                Log.d(LOG_TAG, "Trying to connect to paired devices.");
+                Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
 
-            // Loop through paired devices
-            for (BluetoothDevice device : pairedDevices) {
-                Log.d(LOG_TAG, "Bluetooth device: " + device.getName()
-                        + ": " + device.getAddress());
+                // Turn on / off screen accordingly.
+                if (pairedDevices.size() > 0) {
 
-                // Try to connect each.
-                AsyncTask.THREAD_POOL_EXECUTOR.execute(new ConnectBluetoothRunnable(device));
+                    // Loop through paired devices
+                    for (final BluetoothDevice device : pairedDevices) {
+                        Log.d(LOG_TAG, "Found paired bluetooth device: " + device.getName()
+                                + ": " + device.getAddress());
+
+                        // Try to connect.
+                        FutureTask<Void> future = new FutureTask<Void>(
+                                new Callable<Void>() {
+
+                                    @Override
+                                    public Void call() throws Exception {
+                                        BluetoothSocket socket;
+                                        socket = device
+                                                .createRfcommSocketToServiceRecord(BLUETOOTH_UUID);
+                                        socket.connect();
+                                        socket.close();
+                                        return null;
+                                    }
+                                });
+                        AsyncTask.THREAD_POOL_EXECUTOR.execute(future);
+
+                        // Turn on / off screen accordingly.
+                        try {
+                            future.get(5, TimeUnit.SECONDS);
+                            Log.d(LOG_TAG, "Connected to " + device.getName());
+                            ensureScreenOn();
+                        } catch (Exception e) {
+                            Log.e(LOG_TAG, "Error connecting " + device.getName());
+                            ensureScreenOff();
+                        }
+                    }
+                } else {
+                    ensureScreenOff();
+                }
             }
-        } else {
-            turnScreenOff();
-        }
+        }, 0, DateUtils.SECOND_IN_MILLIS);
     }
 
     @Override
@@ -148,7 +191,7 @@ public class Reborn extends CordovaActivity {
         super.onActivityResult(requestCode, resultCode, intent);
         if (requestCode == REQUEST_CODE_ENABLE_BLUETOOTH) {
             if (resultCode == RESULT_OK && mBluetoothAdapter.isEnabled()) {
-                tryConnectBluetooth();
+                scheduleBluetoothScan();
             } else {
                 Log.d(LOG_TAG, "User chose not to enable bluetooth. Finish now.");
                 finish();
@@ -173,16 +216,14 @@ public class Reborn extends CordovaActivity {
 
     @Override
     protected void onStart() {
-        Log.d(LOG_TAG, "onStart");
+        Log.d(LOG_TAG, String.format("onStart {%h}", hashCode()));
         super.onStart();
-
-        // Turn on the screen.
-        turnScreenOn();
     }
 
     @SuppressLint("Wakelock")
     @Override
     public void onDestroy() {
+        Log.d(LOG_TAG, String.format("onDestroy {%h}", hashCode()));
         super.onDestroy();
 
         // Release wake lock.
@@ -190,6 +231,12 @@ public class Reborn extends CordovaActivity {
             if (mPartialWakeLock.isHeld())
                 mPartialWakeLock.release();
             mPartialWakeLock = null;
+        }
+
+        // Release timer.
+        if (mBluetoothScanTimer != null) {
+            mBluetoothScanTimer.cancel();
+            mBluetoothScanTimer = null;
         }
 
         disconnectCommandClient();
@@ -221,47 +268,53 @@ public class Reborn extends CordovaActivity {
     /**
      * Turn on device screen.
      */
-    private void turnScreenOn() {
-        runOnUiThread(new Runnable() {
+    @SuppressLint("NewApi")
+    private void ensureScreenOn() {
+        Runnable r = new Runnable() {
 
             @Override
             public void run() {
-                Log.d(LOG_TAG, "Turn on screen.");
-
-                // Unlock the device and make the screen as bright as possible.
-                getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
-                        | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
-                        | WindowManager.LayoutParams.FLAG_FULLSCREEN
-                        | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
-                        | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-                WindowManager.LayoutParams params = getWindow().getAttributes();
-                params.screenBrightness = WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_FULL;
-                getWindow().setAttributes(params);
+                Log.d(LOG_TAG, "ensureScreenOn");
+                PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+                if (!pm.isScreenOn()) {
+                    Log.d(LOG_TAG, "Recreate to turn on the screen.");
+                    recreate();
+                }
             }
-        });
+        };
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            getWindow().getDecorView().postOnAnimation(r);
+        } else {
+            runOnUiThread(r);
+        }
 
     }
 
     /**
      * Turn off the device screen.
      */
-    private void turnScreenOff() {
+    private void ensureScreenOff() {
         runOnUiThread(new Runnable() {
 
             @Override
             public void run() {
-                Log.d(LOG_TAG, "Turn off screen.");
+                Log.d(LOG_TAG, "ensureScreenOff");
+                PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+                if (pm.isScreenOn()) {
+                    Log.d(LOG_TAG, "Turn off screen.");
 
-                // Make the screen as dark as possible.
-                WindowManager.LayoutParams params = getWindow().getAttributes();
-                params.screenBrightness = WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_OFF;
-                getWindow().setAttributes(params);
+                    // Make the screen as dark as possible.
+                    WindowManager.LayoutParams params = getWindow().getAttributes();
+                    params.screenBrightness = WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_OFF;
+                    getWindow().setAttributes(params);
 
-                // Lock the screen, if possible.
-                DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
-                if (dpm.isAdminActive(new ComponentName(Reborn.this,
-                        RebornDeviceAdminReceiver.class))) {
-                    dpm.lockNow();
+                    // Lock the screen, if possible.
+                    DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
+                    if (dpm.isAdminActive(new ComponentName(Reborn.this,
+                            RebornDeviceAdminReceiver.class))) {
+                        dpm.lockNow();
+                    }
                 }
             }
         });
@@ -347,14 +400,9 @@ public class Reborn extends CordovaActivity {
             Log.d(LOG_TAG, "Command received: " + cmd);
 
             if (CMD_TURN_ON_SCREEN.equals(cmd)) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        recreate();
-                    }
-                });
+                ensureScreenOn();
             } else if (CMD_TURN_OFF_SCREEN.equals(cmd)) {
-                turnScreenOff();
+                ensureScreenOff();
             } else if (CMD_EXIT.equals(cmd)) {
                 runOnUiThread(new Runnable() {
 
@@ -379,12 +427,13 @@ public class Reborn extends CordovaActivity {
      * 
      * @author samael_wang@htc.com
      */
+    @SuppressWarnings("unused")
     private class BluetoothConnectionReceiver extends BroadcastReceiver {
 
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d(LOG_TAG, "action=" + intent.getAction());
-            tryConnectBluetooth();
+            scheduleBluetoothScan();
         }
 
     }
@@ -394,6 +443,7 @@ public class Reborn extends CordovaActivity {
      * 
      * @author samael_wang@htc.com
      */
+    @SuppressWarnings("unused")
     private class ConnectBluetoothRunnable implements Runnable {
         private BluetoothDevice mmBluetoothDevice;
 
@@ -410,10 +460,9 @@ public class Reborn extends CordovaActivity {
             try {
                 socket = mmBluetoothDevice
                         .createRfcommSocketToServiceRecord(BLUETOOTH_UUID);
-                turnScreenOn();
             } catch (IOException e) {
                 Log.e(LOG_TAG, "Error creating bluetooth socket: ", e);
-                turnScreenOff();
+                ensureScreenOff();
                 return;
             }
 
@@ -426,7 +475,7 @@ public class Reborn extends CordovaActivity {
                 flooding(socket);
             } catch (IOException connectException) {
                 Log.e(LOG_TAG, "Error connecting bluetooth: ", connectException);
-                turnScreenOff();
+                ensureScreenOff();
             } finally {
                 try {
                     socket.close();
