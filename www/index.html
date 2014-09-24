@@ -27,9 +27,9 @@
         <link rel="stylesheet" type="text/css" href="css/index.css" />
         <meta name="msapplication-tap-highlight" content="no" />
         <title>Hello World</title>
-        <link rel="stylesheet" href="css/jquery.mobile-1.2.1.css" />
+        <link rel="stylesheet" href="css/jquery.mobile-1.1.1.min.css" />
         <script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
-        <script type="text/javascript" src="js/jquery.mobile-1.2.1.js"></script>
+        <script type="text/javascript" src="js/jquery.mobile-1.1.1.min.js"></script>
         <script type="text/javascript" src="js/jquery.magi.min.js"></script>
         <script type="text/javascript" src="js/blinkfeed.js"></script>
         <link rel="stylesheet" type="text/css" href="css/magi.min.css" />
@@ -50,6 +50,17 @@
             });
             window.plugins.insomnia.keepAwake();
         </script>
+
+        <link rel="stylesheet" href="https://code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css">
+        <script type="text/javascript" src="js/jquery.datepick.js"></script>
+
+          
+        <style>
+          body {
+            font-family: "Trebuchet MS", "Helvetica", "Arial",  "Verdana", "sans-serif";
+            font-size: 100%;
+          }
+        </style>
     </head>
     <body>
         <div data-role="page" id="pHome" class="pHome">
@@ -74,9 +85,10 @@
             </div>
         </div>
         <div data-role="page" id="pCalendar">
-            <div data-role="content">
-                <!-- <div class="calendar_image" id="calendar_image"> -->
-                <div class="calender">
+            <div class="clockWrap">
+                <div class="clockMain" >
+                    <div id="datepicker" style="clear:both; height:400px; position:relative"></div>
+                </div>
             </div>
         </div>
         <div data-role="page" id="pNotification">
@@ -195,12 +207,10 @@
         })(jQuery);
     //--></script>
 
-            <script type="text/javascript">
-                var priority = 'd';
-                var customDays = new Array('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday');
-                var customMonths = new Array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
-                var customMonthsShort = new Array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
-                $(".calender").magiCalender(priority, customDays, customMonths, customMonthsShort);
-            </script>
+          <script>
+          $(function() {
+            $( "#datepicker" ).datepicker();
+          });
+          </script>
     </body>
 </html>
