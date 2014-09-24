@@ -200,9 +200,18 @@
     //--></script>
 
           <script>
-          $(function() {
-            $( "#datepicker" ).datepicker();
-          });
+            $(function() {
+                $( "#datepicker" ).datepicker();
+            });
+            
+            //set notification toggle
+            $('.date , .time').click(function(){
+                $('.n_line').toggle();
+            });
+
+            $('.n_line').click(function(){
+                $('.n_line').toggle();
+            });
           </script>
     </body>
 </html>
