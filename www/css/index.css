@@ -391,4 +391,88 @@ div.n_content {
     vertical-align: middle;
 }
 
+.n_main_call {
+    position: fixed;
+    width: 80%;
+    height: 70%;
+    left: 10%;
+    top: 15%;
+    right: 10%;
+    z-index: 888;
+    background-color: #006600;
+
+    border-radius: 15px;
+
+}
+
+.n_content_call {
+    position: fixed;
+    width: 78%;
+    height: 66%;
+    left: 11%;
+    top: 17%;
+    right: 10%;
+    z-index: 999;
+    background-color: #33CC33;
+    padding: 10x;
+    border-radius: 15px;
+}
+.n_content_call2 {
+    position: fixed;
+    width: 78%;
+    height: 66%;
+    left: 11%;
+    top: 17%;
+    right: 10%;
+    z-index: 999;
+    background-color: #66FF66;
+    padding: 10x;
+    border-radius: 15px;
+
+}
+
+.n_call {
+    display: none;
+}
+
+.n_title_call {
+    font-size: 30px;
+    font-weight: bold;
+    margin: 5px;
+    text-align: center;
+}
+
+.n_icon_call {
+    float: left;
+    width: 120px;
+    margin: 0 10px 0 25px;
+    vertical-align: middle;
+    border-radius: 20%;
+}
+
+.n_icon_call_ring {
+    width: 50px;
+    position: fixed;
+    bottom: 75px;
+    right: 90px;
+    z-index: 1000;
+}
+
+.n_call_text {
+    float: left;
+}
+
+.n_subtitle_call {
+    font-size: 30px;
+    font-weight: bold;
+    margin: 20px;
+    text-shadow: none;
+}
+.n_msg_call {
+    font-size: 30px;
+    font-weight: normal;
+    margin: 20px;
+    text-shadow: none;
+}
+
 
