@@ -285,7 +285,8 @@ public class Reborn extends CordovaActivity {
                 PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
                 if (!pm.isScreenOn()) {
                     Log.d(LOG_TAG, "Recreate to turn on the screen.");
-                    recreate();
+                    finish();
+                    startActivity(getIntent());
                 }
             }
         };
