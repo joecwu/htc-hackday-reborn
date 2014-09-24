@@ -385,8 +385,20 @@ div.n_content {
     display: inline;
     vertical-align: middle;
 }
+
+.n_subtitle_calendar {
+    font-size: 26px;
+    font-weight: bold;
+    display: inline;
+    vertical-align: middle;
+}
 .n_msg {
     font-size: 30px;
+    display: inline;
+    vertical-align: middle;
+}
+.n_msg_calendar {
+    font-size: 24px;
     display: inline;
     vertical-align: middle;
 }
