@@ -109,7 +109,37 @@
         </div>
         <div data-role="page" id="pCalendar">
             <div id="datepicker" style="clear:both; height:400px; position:relative"></div>
-        </div>
+             <div id="n_Calendar" class="n_Calendar">
+                <div class="c_main">
+                    <div class="c_content">
+                        <p class="n_title">Reminders</p>
+                        <table>
+                            <tr>
+                                <td><img class="n_icon" src="img/calendar.png"/></td>
+                                <td>
+                                    <p class="n_subtitle" style="font-family: 'Ubuntu', Arial, sans-serif;">09-25 15:00 - 17:00 @B044</p>
+                                    <BR/>
+                                    <p class="n_msg"><strong> [ CS teem meeting ]</strong></p>
+                                </td>
+                            </tr>
+                        </table>
+                        
+                        
+                        <hr/>
+                        <table>
+                            <tr>
+                                <td><img class="n_icon" src="img/calendar.png"/></td>
+                                <td>
+                                    <p class="n_subtitle" style="font-family: 'Ubuntu', Arial, sans-serif;">09-25 18:30 17:00 @涮八方</p>
+                                    <BR/>
+                                    <p class="n_msg"><strong>[ CS teem dinner ]</strong></p>
+                                </td>
+                            </tr>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
         <script type="text/javascript" src="cordova.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
         <script type="text/javascript">
@@ -221,9 +251,54 @@
 
           <script>
             $(function() {
-                $( "#datepicker" ).datepicker();
+                
+                $( "#datepicker" ).datepicker({                    
+                    dateFormat: 'yy-mm-dd',
+                    beforeShowDay: function (date) {
+                        var dates = [//'2014-09-24', 
+                                     '2014-09-25']; 
+                        var tips  = ['some description','some other description'];    
+                        date =date.getFullYear() + "-" + ("0" + (date.getMonth() + 1)).slice(-2) + "-" + ("0" + date.getDate()).slice(-2) 
+                        //console.log(date);
+                        for (var i = 0; i < dates.length; i++) {
+                            if (dates[i] == date) {              
+                                return [true, 'c_highlight', tips[i]];
+                            }
+                        }
+                        return [true, ''];
+                    },
+                    showOtherMonths: true,
+                    //numberOfMonths: 3,
+                    onSelect: function (date) {
+                        // Your CSS changes, just in case you still need them
+                        //console.log(date);
+                        //2014-09-25
+                        if( date == '2014-09-25'){
+                          $('.n_Calendar').toggle();    
+                        }
+                    }
+                });
+
+                function highlightDays(date) {
+                    for (var i = 0; i < dates.length; i++) {
+                        if (new Date(dates[i]).toString() == date.toString()) {              
+                            return [true, 'highlight', tips[i]];
+                        }
+                    }
+                    return [true, ''];
+                 } 
+
             });
-            
+            //set calendar toggle
+            $('.n_Calendar').hide();//default hide
+            $('.ui-state-highlight').live("click",function(){
+                $('.n_Calendar').toggle();
+            });
+
+            $('.n_Calendar').click(function(){
+                $('.n_Calendar').toggle();
+            });
+
             //set notification toggle
             $('.time').click(function(){
                 $('.n_m2').hide();
