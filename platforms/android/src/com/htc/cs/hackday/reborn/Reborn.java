@@ -232,12 +232,15 @@ public class Reborn extends CordovaActivity {
         super.onStart();
     }
 
-    @SuppressLint("Wakelock")
     @Override
     public void onDestroy() {
         Log.d(LOG_TAG, String.format("onDestroy {%h}", hashCode()));
         super.onDestroy();
 
+        releaseResources();
+    }
+
+    private void releaseResources() {
         // Release wake lock.
         if (mPartialWakeLock != null) {
             if (mPartialWakeLock.isHeld())
@@ -286,6 +289,7 @@ public class Reborn extends CordovaActivity {
                 if (!pm.isScreenOn()) {
                     Log.d(LOG_TAG, "Recreate to turn on the screen.");
                     finish();
+                    releaseResources();
                     startActivity(getIntent());
                 }
             }
