@@ -1,21 +1,32 @@
-
 var blinkfeed = {
+	renewTime: new Date().getTime(),
 	HIGHLIGHT_URL: "https://geo-prism.htcsense.com/s6/fi/hl/r/50?cids=1319108,1320486,1398121",
 	fillItem: function(items,index) {
 		var item = items[index];
 		$('div.bf_title').text(item.meta.tl);
+		$('div.bf_title').click(function() {
+			window.location.href=item.meta.u;
+		});
 		var imgId = item.meta.th.id;
 		var imgRs = item.meta.th.rs[0];
 		var imgURL = 'https://img-prism.htcsense.com/thumbnail?id='+imgId+'&w='+imgRs;
 		var iconURL = 'https://img-prism.htcsense.com/provider/icon?id='+item.meta.pid;
+		$('div.bf_image').css("background-image", "none");
 		$('div.bf_image').css("background-image", "url("+imgURL+")");
 		// $('div.bf_image').prepend('<img class="bf_img" src="'+imgURL+'" />');
 		$('div.bf_icon').css("background-image", "url("+iconURL+")");
 		$('div.bf_source').text(item.meta.src);
-		if(items.length > index+1){
-			setTimeout( function() { blinkfeed.fillItem(items,index+1); } , 5000);
+		//alert(this.renewTime + " : " + new Date().getTime());
+		if( (this.renewTime + (15 * 60 * 1000) < new Date().getTime()) ){
+			// renew
+			blinkfeed.renewTime = new Date().getTime();
+			blinkfeed.getHighlight();
 		}else{
-			setTimeout( function() { blinkfeed.fillItem(items,0); } , 5000);
+			if(items.length > index+1){
+				setTimeout( function() { blinkfeed.fillItem(items,index+1); } , 5000);
+			}else{
+				setTimeout( function() { blinkfeed.fillItem(items,0); } , 5000);
+			}
 		}
 	},
 	getHighlight: function() {
