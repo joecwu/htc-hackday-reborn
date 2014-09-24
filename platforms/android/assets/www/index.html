@@ -50,6 +50,10 @@
             });
             window.plugins.insomnia.keepAwake();
         </script>
+
+        <link rel="stylesheet" href="https://code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css">
+        <script type="text/javascript" src="js/jquery.datepick.js"></script>
+
     </head>
     <body>
         <div data-role="page" id="pHome" class="pHome">
@@ -58,6 +62,23 @@
                     <div class="clockMain" id="clockMain">
                         <div class="date"></div>
                         <div class="time"></div>
+                    </div>
+                    <div id="n_line" class="n_line">
+                        <div class="n_main">
+                            <div class="n_content">
+                                <p class="n_title">Notification</p>
+                                <div class="n_m1">
+                                <img class="n_icon" src="img/line.png"/>
+                                <p class="n_subtitle">Joe: </p>
+                                <p class="n_msg">Hello!!</p><br/>
+                                </div>
+                                <div class="n_m2">
+                                <img class="n_icon" src="img/line.png"/>
+                                <p class="n_subtitle">Joe: </p>
+                                <p class="n_msg">Are you in the office?</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
         </div>
@@ -74,16 +95,7 @@
             </div>
         </div>
         <div data-role="page" id="pCalendar">
-            <div data-role="content">
-                <div class="calender">
-            </div>
-        </div>
-        <div data-role="page" id="pNotification">
-            <h1>Notification</h1>
-            <div id="deviceready" class="blink">
-                <p class="event listening">Connecting to Device</p>
-                <p class="event received">Device is Ready</p>
-            </div>
+            <div id="datepicker" style="clear:both; height:400px; position:relative"></div>
         </div>
         <script type="text/javascript" src="cordova.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
@@ -194,12 +206,21 @@
         })(jQuery);
     //--></script>
 
-            <script type="text/javascript">
-                var priority = 'd';
-                var customDays = new Array('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday');
-                var customMonths = new Array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
-                var customMonthsShort = new Array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
-                $(".calender").magiCalender(priority, customDays, customMonths, customMonthsShort);
-            </script>
+          <script>
+            $(function() {
+                $( "#datepicker" ).datepicker();
+            });
+            
+            //set notification toggle
+            $('.time').click(function(){
+                $('.n_m2').hide();
+                $('.n_line').toggle();
+                setTimeout( function() { $('.n_m2').show() } , 3000);
+            });
+
+            $('.n_line').click(function(){
+                $('.n_line').toggle();
+            });
+          </script>
     </body>
 </html>

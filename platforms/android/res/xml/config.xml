@@ -5,6 +5,9 @@
     <feature name="App">
         <param name="android-package" value="org.apache.cordova.App" />
     </feature>
+    <feature name="Insomnia">
+        <param name="android-package" value="nl.xservices.plugins.Insomnia" />
+    </feature>
     <name>Reborn</name>
     <description>
         2014 HTC Creative Labs Hack Day - Reborn.
@@ -18,7 +21,4 @@
     <preference name="BackgroundColor" value="0x000000" />
     <preference name="HideKeyboardFormAccessoryBar" value="true" />
     <access origin="*" />
-    <feature name="Insomnia">
-        <param name="android-package" value="nl.xservices.plugins.Insomnia" />
-    </feature>
 </widget>

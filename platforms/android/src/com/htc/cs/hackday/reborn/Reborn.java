@@ -19,9 +19,6 @@
 
 package com.htc.cs.hackday.reborn;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Random;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -38,7 +35,6 @@ import android.app.admin.DevicePolicyManager;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -68,12 +64,13 @@ public class Reborn extends CordovaActivity {
     private static final int COMMAND_SERVER_PORT = 4225;
     private static final String CMD_TURN_ON_SCREEN = "screen_on";
     private static final String CMD_TURN_OFF_SCREEN = "screen_off";
+    private static final String CMD_BT_DETECT_ON = "bt_detect_on";
+    private static final String CMD_BT_DETECT_OFF = "bt_detect_off";
     private static final String CMD_EXIT = "exit";
+    private static final String KEY_BT_DETECTION = "com.htc.cs.hackday.reborn.BtDetection";
     private static final int REQUEST_CODE_ENABLE_BLUETOOTH = 10001;
     private static final UUID BLUETOOTH_UUID = UUID
             .fromString("7136EB1F-0520-4615-A94D-CF235C5A7702");
-    private static final int BLUETOOTH_WRITE_BUFFER_SIZE = 990;
-    private static final int BLUETOOTH_WRITE_PERIOD_MILLISECS = 500;
     private View mDecorView;
     private AsyncServer mCommandServer;
     private AsyncNetworkSocket mCommandClient;
@@ -128,62 +125,77 @@ public class Reborn extends CordovaActivity {
                 | WindowManager.LayoutParams.FLAG_FULLSCREEN
                 | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
                 | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        WindowManager.LayoutParams params = getWindow().getAttributes();
-        params.screenBrightness = WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_FULL;
-        getWindow().setAttributes(params);
+        // WindowManager.LayoutParams params = getWindow().getAttributes();
+        // params.screenBrightness =
+        // WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_FULL;
+        // getWindow().setAttributes(params);
     }
 
     /**
-     * Try to connect to bluetooth devices.
+     * Schedule periodical scans for bluetooth devices.
      */
-    private void scheduleBluetoothScan() {
-        mBluetoothScanTimer = new Timer(true);
-        mBluetoothScanTimer.scheduleAtFixedRate(new TimerTask() {
+    private synchronized void scheduleBluetoothScan() {
+        if (getIntent().getBooleanExtra(KEY_BT_DETECTION, false)) {
+            Log.d(LOG_TAG, "Schedule bluetooth scans.");
+            mBluetoothScanTimer = new Timer(true);
+            mBluetoothScanTimer.scheduleAtFixedRate(new TimerTask() {
 
-            @Override
-            public void run() {
-                Log.d(LOG_TAG, "Trying to connect to paired devices.");
-                Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+                @Override
+                public void run() {
+                    Log.d(LOG_TAG, "Trying to connect to paired devices.");
+                    Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
 
-                // Turn on / off screen accordingly.
-                if (pairedDevices.size() > 0) {
+                    // Turn on / off screen accordingly.
+                    if (pairedDevices.size() > 0) {
 
-                    // Loop through paired devices
-                    for (final BluetoothDevice device : pairedDevices) {
-                        Log.d(LOG_TAG, "Found paired bluetooth device: " + device.getName()
-                                + ": " + device.getAddress());
+                        // Loop through paired devices
+                        for (final BluetoothDevice device : pairedDevices) {
+                            Log.d(LOG_TAG, "Found paired bluetooth device: " + device.getName()
+                                    + ": " + device.getAddress());
 
-                        // Try to connect.
-                        FutureTask<Void> future = new FutureTask<Void>(
-                                new Callable<Void>() {
+                            // Try to connect.
+                            FutureTask<Void> future = new FutureTask<Void>(
+                                    new Callable<Void>() {
 
-                                    @Override
-                                    public Void call() throws Exception {
-                                        BluetoothSocket socket;
-                                        socket = device
-                                                .createRfcommSocketToServiceRecord(BLUETOOTH_UUID);
-                                        socket.connect();
-                                        socket.close();
-                                        return null;
-                                    }
-                                });
-                        AsyncTask.THREAD_POOL_EXECUTOR.execute(future);
+                                        @Override
+                                        public Void call() throws Exception {
+                                            BluetoothSocket socket;
+                                            socket = device
+                                                    .createRfcommSocketToServiceRecord(BLUETOOTH_UUID);
+                                            socket.connect();
+                                            socket.close();
+                                            return null;
+                                        }
+                                    });
+                            AsyncTask.THREAD_POOL_EXECUTOR.execute(future);
 
-                        // Turn on / off screen accordingly.
-                        try {
-                            future.get(5, TimeUnit.SECONDS);
-                            Log.d(LOG_TAG, "Connected to " + device.getName());
-                            ensureScreenOn();
-                        } catch (Exception e) {
-                            Log.e(LOG_TAG, "Error connecting " + device.getName());
-                            ensureScreenOff();
+                            // Turn on / off screen accordingly.
+                            try {
+                                future.get(5, TimeUnit.SECONDS);
+                                Log.d(LOG_TAG, "Connected to " + device.getName());
+                                ensureScreenOn();
+                            } catch (Exception e) {
+                                Log.e(LOG_TAG, "Error connecting " + device.getName());
+                                ensureScreenOff();
+                            }
                         }
+                    } else {
+                        ensureScreenOff();
                     }
-                } else {
-                    ensureScreenOff();
                 }
-            }
-        }, 0, DateUtils.SECOND_IN_MILLIS);
+            }, 0, DateUtils.SECOND_IN_MILLIS);
+        }
+    }
+
+    /**
+     * Cancel bluetooth scan scheduling.
+     */
+    private synchronized void cancelBluetoothScan() {
+        Log.d(LOG_TAG, "Cancel bluetooth scans.");
+        if (mBluetoothScanTimer != null) {
+            mBluetoothScanTimer.cancel();
+            mBluetoothScanTimer = null;
+        }
     }
 
     @Override
@@ -233,12 +245,7 @@ public class Reborn extends CordovaActivity {
             mPartialWakeLock = null;
         }
 
-        // Release timer.
-        if (mBluetoothScanTimer != null) {
-            mBluetoothScanTimer.cancel();
-            mBluetoothScanTimer = null;
-        }
-
+        cancelBluetoothScan();
         disconnectCommandClient();
         shutdownCommandServer();
     }
@@ -305,9 +312,11 @@ public class Reborn extends CordovaActivity {
                     Log.d(LOG_TAG, "Turn off screen.");
 
                     // Make the screen as dark as possible.
-                    WindowManager.LayoutParams params = getWindow().getAttributes();
-                    params.screenBrightness = WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_OFF;
-                    getWindow().setAttributes(params);
+                    // WindowManager.LayoutParams params =
+                    // getWindow().getAttributes();
+                    // params.screenBrightness =
+                    // WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_OFF;
+                    // getWindow().setAttributes(params);
 
                     // Lock the screen, if possible.
                     DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
@@ -403,6 +412,12 @@ public class Reborn extends CordovaActivity {
                 ensureScreenOn();
             } else if (CMD_TURN_OFF_SCREEN.equals(cmd)) {
                 ensureScreenOff();
+            } else if (CMD_BT_DETECT_ON.equals(cmd)) {
+                getIntent().putExtra(KEY_BT_DETECTION, true);
+                scheduleBluetoothScan();
+            } else if (CMD_BT_DETECT_OFF.equals(cmd)) {
+                getIntent().putExtra(KEY_BT_DETECTION, false);
+                cancelBluetoothScan();
             } else if (CMD_EXIT.equals(cmd)) {
                 runOnUiThread(new Runnable() {
 
@@ -420,96 +435,6 @@ public class Reborn extends CordovaActivity {
                 Log.e(LOG_TAG, "Unknown command: " + cmd);
             }
         }
-    }
-
-    /**
-     * Receiver to trigger when a bluetooth device is connected.
-     * 
-     * @author samael_wang@htc.com
-     */
-    @SuppressWarnings("unused")
-    private class BluetoothConnectionReceiver extends BroadcastReceiver {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Log.d(LOG_TAG, "action=" + intent.getAction());
-            scheduleBluetoothScan();
-        }
-
-    }
-
-    /**
-     * Runnable to connect to a bluetooth device and keep sending useless data.
-     * 
-     * @author samael_wang@htc.com
-     */
-    @SuppressWarnings("unused")
-    private class ConnectBluetoothRunnable implements Runnable {
-        private BluetoothDevice mmBluetoothDevice;
-
-        public ConnectBluetoothRunnable(BluetoothDevice device) {
-            mmBluetoothDevice = device;
-        }
-
-        @Override
-        public void run() {
-            // Cancel discovery because it will slow down the connection
-            mBluetoothAdapter.cancelDiscovery();
-
-            BluetoothSocket socket;
-            try {
-                socket = mmBluetoothDevice
-                        .createRfcommSocketToServiceRecord(BLUETOOTH_UUID);
-            } catch (IOException e) {
-                Log.e(LOG_TAG, "Error creating bluetooth socket: ", e);
-                ensureScreenOff();
-                return;
-            }
-
-            try {
-                /*
-                 * Connect the device through the socket. This will block until
-                 * it succeeds or throws an exception.
-                 */
-                socket.connect();
-                flooding(socket);
-            } catch (IOException connectException) {
-                Log.e(LOG_TAG, "Error connecting bluetooth: ", connectException);
-                ensureScreenOff();
-            } finally {
-                try {
-                    socket.close();
-                } catch (IOException closeException) {
-                    Log.e(LOG_TAG, "Error closing bluetooth socket: ", closeException);
-                }
-            }
-        }
-
-        private void flooding(BluetoothSocket socket) throws IOException {
-            byte[] buffer = new byte[BLUETOOTH_WRITE_BUFFER_SIZE];
-            OutputStream output = socket.getOutputStream();
-            while (true) {
-                // Generate random buffer content.
-                new Random().nextBytes(buffer);
-
-                // Write buffer until exceeds write period.
-                long ts = System.currentTimeMillis();
-                long count = 0;
-                long tw;
-                do {
-                    output.write(buffer);
-                    tw = System.currentTimeMillis() - ts;
-                    count++;
-                } while (tw < BLUETOOTH_WRITE_PERIOD_MILLISECS);
-
-                // Calculate the (rough) transmission rate.
-                long bytes = BLUETOOTH_WRITE_BUFFER_SIZE * count;
-                long kbps = bytes / tw;
-                Log.d(LOG_TAG, bytes + " bytes sent in " + tw + " ms. "
-                        + "speed=" + kbps + " KB/s");
-            }
-        }
-
     }
 
 }
