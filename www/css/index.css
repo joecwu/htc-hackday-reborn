@@ -374,18 +374,21 @@ div.n_content {
 
 .n_icon {
     width: 50px;
-    margin-left: 20px;
+    margin: 0 10px 0 20px;
     display: inline;
+    vertical-align: middle;
 }
 
 .n_subtitle {
     font-size: 30px;
     font-weight: bold;
     display: inline;
+    vertical-align: middle;
 }
 .n_msg {
     font-size: 30px;
     display: inline;
+    vertical-align: middle;
 }
 
 

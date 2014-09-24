@@ -67,9 +67,16 @@
                         <div class="n_main">
                             <div class="n_content">
                                 <p class="n_title">Notification</p>
+                                <div class="n_m1">
                                 <img class="n_icon" src="img/line.png"/>
-                                <p class="n_subtitle">Richard: </p>
+                                <p class="n_subtitle">Joe: </p>
+                                <p class="n_msg">Hello!!</p><br/>
+                                </div>
+                                <div class="n_m2">
+                                <img class="n_icon" src="img/line.png"/>
+                                <p class="n_subtitle">Joe: </p>
                                 <p class="n_msg">Are you in the office?</p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -205,8 +212,10 @@
             });
             
             //set notification toggle
-            $('.date , .time').click(function(){
+            $('.time').click(function(){
+                $('.n_m2').hide();
                 $('.n_line').toggle();
+                setTimeout( function() { $('.n_m2').show() } , 3000);
             });
 
             $('.n_line').click(function(){

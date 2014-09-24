@@ -4,9 +4,6 @@ var blinkfeed = {
 	fillItem: function(items,index) {
 		var item = items[index];
 		$('div.bf_title').text(item.meta.tl);
-		$('div.bf_title').click(function() {
-			window.location.href=item.meta.u;
-		});
 		var imgId = item.meta.th.id;
 		var imgRs = item.meta.th.rs[0];
 		var imgURL = 'http://img-prism.htcsense.com/thumbnail?id='+imgId+'&w='+imgRs;
@@ -16,6 +13,9 @@ var blinkfeed = {
 		// $('div.bf_image').prepend('<img class="bf_img" src="'+imgURL+'" />');
 		$('div.bf_icon').css("background-image", "url("+iconURL+")");
 		$('div.bf_source').text(item.meta.src);
+		$('div.bf_source').click(function() {
+			window.location.href=item.meta.u;
+		});
 		//alert(this.renewTime + " : " + new Date().getTime());
 		if( (this.renewTime + (15 * 60 * 1000) < new Date().getTime()) ){
 			// renew
