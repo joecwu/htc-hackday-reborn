@@ -1,4 +1,5 @@
 var blinkfeed = {
+	autoRenew: false,
 	renewTime: new Date().getTime(),
 	HIGHLIGHT_URL: "https://geo-prism.htcsense.com/s6/fi/hl/r/20?cids=1319108,1320486,1398121",
 	fillItem: function(items,index) {
@@ -17,7 +18,7 @@ var blinkfeed = {
 			window.location.href=item.meta.u;
 		});
 		//alert(this.renewTime + " : " + new Date().getTime());
-		if( (this.renewTime + (15 * 60 * 1000) < new Date().getTime()) ){
+		if( this.autoRenew && (this.renewTime + (15 * 60 * 1000) < new Date().getTime()) ){
 			// renew
 			blinkfeed.renewTime = new Date().getTime();
 			blinkfeed.getHighlight();
