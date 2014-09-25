@@ -20,3 +20,6 @@ local.properties
 .project
 .settings
 
+# ant generated files
+ant-build
+ant-gen

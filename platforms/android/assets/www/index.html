@@ -50,6 +50,10 @@
             });
             window.plugins.insomnia.keepAwake();
         </script>
+
+        <link rel="stylesheet" href="css/jquery-ui.css">
+        <script type="text/javascript" src="js/jquery.datepick.js"></script>
+
     </head>
     <body>
         <div data-role="page" id="pHome" class="pHome">
@@ -58,6 +62,36 @@
                     <div class="clockMain" id="clockMain">
                         <div class="date"></div>
                         <div class="time"></div>
+                    </div>
+                    <div id="n_line" class="n_line">
+                        <div class="n_main">
+                            <div class="n_content">
+                                <p class="n_title">Notification</p>
+                                <div class="n_m1">
+                                <img class="n_icon" src="img/line.png"/>
+                                <p class="n_subtitle">Joe: </p>
+                                <p class="n_msg">Hello!!</p><br/>
+                                </div>
+                                <div class="n_m2">
+                                <img class="n_icon" src="img/line.png"/>
+                                <p class="n_subtitle">Joe: </p>
+                                <p class="n_msg">Are you in the office?</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="n_call" class="n_call">
+                        <div class="n_main_call">
+                            <div class="n_content_call" id="n_content_call">
+                                <p class="n_title_call">Incoming Call</p>
+                                <img class="n_icon_call" src="img/peter.jpg"/>
+                                <img class="n_icon_call_ring" src="img/phone_ring.png"/>
+                                <div class="n_call_text">
+                                    <p class="n_subtitle_call">Peter Chou</p>
+                                    <p class="n_msg_call">+886-9-8282-8888</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
         </div>
@@ -74,17 +108,39 @@
             </div>
         </div>
         <div data-role="page" id="pCalendar">
-            <div data-role="content">
-                <div class="calender">
+            <div id="datepicker" style="clear:both; height:400px; position:relative"></div>
+             <div id="n_Calendar" class="n_Calendar">
+                <div class="c_main">
+                    <div class="c_content">
+                        <p class="n_title">Reminders</p>
+                        <hr/>
+                        <table>
+                            <tr>
+                                <td><img class="n_icon" src="img/calendar.png"/></td>
+                                <td>
+                                    <p class="n_subtitle_calendar" style="font-family: 'Ubuntu', Arial, sans-serif;">09-25 15:00 - 17:00 @B044</p>
+                                    <BR/>
+                                    <p class="n_msg_calendar"><strong> [ CS teem meeting ]</strong></p>
+                                </td>
+                            </tr>
+                        </table>
+                        
+                        
+                        <hr/>
+                        <table>
+                            <tr>
+                                <td><img class="n_icon" src="img/calendar.png"/></td>
+                                <td>
+                                    <p class="n_subtitle_calendar" style="font-family: 'Ubuntu', Arial, sans-serif;">09-25 18:30 17:00 @涮八方</p>
+                                    <BR/>
+                                    <p class="n_msg_calendar"><strong>[ CS teem dinner ]</strong></p>
+                                </td>
+                            </tr>
+                        </table>
+
+                    </div>
+                </div>
             </div>
-        </div>
-        <div data-role="page" id="pNotification">
-            <h1>Notification</h1>
-            <div id="deviceready" class="blink">
-                <p class="event listening">Connecting to Device</p>
-                <p class="event received">Device is Ready</p>
-            </div>
-        </div>
         <script type="text/javascript" src="cordova.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
         <script type="text/javascript">
@@ -194,12 +250,85 @@
         })(jQuery);
     //--></script>
 
-            <script type="text/javascript">
-                var priority = 'd';
-                var customDays = new Array('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday');
-                var customMonths = new Array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
-                var customMonthsShort = new Array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
-                $(".calender").magiCalender(priority, customDays, customMonths, customMonthsShort);
-            </script>
+          <script>
+            $(function() {
+                
+                $( "#datepicker" ).datepicker({                    
+                    dateFormat: 'yy-mm-dd',
+                    beforeShowDay: function (date) {
+                        var dates = [//'2014-09-24', 
+                                     '2014-09-25']; 
+                        var tips  = ['some description','some other description'];    
+                        date =date.getFullYear() + "-" + ("0" + (date.getMonth() + 1)).slice(-2) + "-" + ("0" + date.getDate()).slice(-2) 
+                        //console.log(date);
+                        for (var i = 0; i < dates.length; i++) {
+                            if (dates[i] == date) {              
+                                return [true, 'c_highlight', tips[i]];
+                            }
+                        }
+                        return [true, ''];
+                    },
+                    showOtherMonths: true,
+                    //numberOfMonths: 3,
+                    onSelect: function (date) {
+                        // Your CSS changes, just in case you still need them
+                        //console.log(date);
+                        //2014-09-25
+                        if( date == '2014-09-25'){
+                          $('.n_Calendar').toggle();    
+                        }
+                    }
+                });
+
+                function highlightDays(date) {
+                    for (var i = 0; i < dates.length; i++) {
+                        if (new Date(dates[i]).toString() == date.toString()) {              
+                            return [true, 'highlight', tips[i]];
+                        }
+                    }
+                    return [true, ''];
+                 } 
+
+            });
+            //set calendar toggle
+            $('.n_Calendar').hide();//default hide
+            $('.ui-state-highlight').live("click",function(){
+                $('.n_Calendar').toggle();
+            });
+
+            $('.n_Calendar').click(function(){
+                $('.n_Calendar').toggle();
+            });
+
+            //set notification toggle
+            $('.time').click(function(){
+                $('.n_m2').hide();
+                $('.n_line').toggle();
+                setTimeout( function() { $('.n_m2').show() } , 3000);
+            });
+
+            $('.n_line').click(function(){
+                $('.n_line').toggle();
+            });
+
+                        //set notification toggle
+            $('.date').click(function(){
+                $('.n_call').toggle();
+            });
+            
+            $('.n_call').click(function(){
+                $('.n_call').toggle();
+            });
+
+            toggleClass('n_content_call','n_content_call','n_content_call2',500);
+
+            function toggleClass(id, c1, c2, ms)
+            {
+              var o=document.getElementById(id);
+              o.className= (o.className == c1 ) ? c2 : c1;
+              setTimeout('toggleClass("'+id+'","'+c1+'","'+c2+'",'+ms+')', ms);
+            }
+
+          </script>
     </body>
 </html>
