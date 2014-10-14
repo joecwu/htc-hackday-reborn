@@ -44,6 +44,20 @@
             });
             $('#pCalendar').live("swiperight", function(){
                 $.mobile.changePage("#pHome", {transition: "slide", reverse: true});
+
+            // setTimeout( function() {
+            //     $('.n_m2').hide();
+            //     $('.n_line').toggle();
+            //     setTimeout( function() { $('.n_m2').show() } , 2500);
+            //     setTimeout( function() { 
+            //         $('.n_line').toggle();
+            //         setTimeout( function() {
+            //             $('.n_call').toggle();; 
+            //             setTimeout( function() { $('.n_call').toggle();; } , 7000);
+            //         } , 5000);
+            //     } , 6000);
+            // } , 3000);
+                
             });
             $('#pBlinkfeed').live("swipeleft", function(){
                 $.mobile.changePage("#pHome", {transition: "slide", reverse: false});
@@ -84,11 +98,11 @@
                         <div class="n_main_call">
                             <div class="n_content_call" id="n_content_call">
                                 <p class="n_title_call">Incoming Call</p>
-                                <img class="n_icon_call" src="img/peter.jpg"/>
+                                <img class="n_icon_call" src="img/joe.jpg"/>
                                 <img class="n_icon_call_ring" src="img/phone_ring.png"/>
                                 <div class="n_call_text">
-                                    <p class="n_subtitle_call">Peter Chou</p>
-                                    <p class="n_msg_call">+886-9-8282-8888</p>
+                                    <p class="n_subtitle_call">Joe Wu</p>
+                                    <p class="n_msg_call">+886-9-8185-1404</p>
                                 </div>
                             </div>
                         </div>
@@ -118,9 +132,9 @@
                             <tr>
                                 <td><img class="n_icon" src="img/calendar.png"/></td>
                                 <td>
-                                    <p class="n_subtitle_calendar" style="font-family: 'Ubuntu', Arial, sans-serif;">09-25 15:00 - 17:00 @B044</p>
+                                    <p class="n_subtitle_calendar" style="font-family: 'Ubuntu', Arial, sans-serif;">10-16 08:00 - 09:00 @B043</p>
                                     <BR/>
-                                    <p class="n_msg_calendar"><strong> [ CS teem meeting ]</strong></p>
+                                    <p class="n_msg_calendar"><strong> [ HackDays Demo ]</strong></p>
                                 </td>
                             </tr>
                         </table>
@@ -131,9 +145,9 @@
                             <tr>
                                 <td><img class="n_icon" src="img/calendar.png"/></td>
                                 <td>
-                                    <p class="n_subtitle_calendar" style="font-family: 'Ubuntu', Arial, sans-serif;">09-25 18:30 17:00 @涮八方</p>
+                                    <p class="n_subtitle_calendar" style="font-family: 'Ubuntu', Arial, sans-serif;">10-16 10:00 12:00 @B047</p>
                                     <BR/>
-                                    <p class="n_msg_calendar"><strong>[ CS teem dinner ]</strong></p>
+                                    <p class="n_msg_calendar"><strong>[ Prism Sense 7 Discussion ]</strong></p>
                                 </td>
                             </tr>
                         </table>
@@ -257,7 +271,7 @@
                     dateFormat: 'yy-mm-dd',
                     beforeShowDay: function (date) {
                         var dates = [//'2014-09-24', 
-                                     '2014-09-25']; 
+                                     '2014-10-16']; 
                         var tips  = ['some description','some other description'];    
                         date =date.getFullYear() + "-" + ("0" + (date.getMonth() + 1)).slice(-2) + "-" + ("0" + date.getDate()).slice(-2) 
                         //console.log(date);
@@ -274,7 +288,7 @@
                         // Your CSS changes, just in case you still need them
                         //console.log(date);
                         //2014-09-25
-                        if( date == '2014-09-25'){
+                        if( date == '2014-10-16'){
                           $('.n_Calendar').toggle();    
                         }
                     }
